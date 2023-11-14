@@ -1,16 +1,43 @@
-/****
-    * Different Operators in
-    * C Programming Language
-    * Many parts of the code contain
-    * some features that are not required
-    * for now. They are only used for
-    * better output format. They are not needed.
-****/
-
 #include <stdio.h>
+#include <math.h>
 #include <windows.h>
 
 COORD cursor = {0, 0};
+
+void gotoPosition(int x, int y);
+void printEquation(int n, double a[]);
+double hornerEvaluation(int n, double x, double a[]);
+double rootFindingBracketingMethod(double x1, double x2, int n, double a[], double stop);
+
+int main(void)
+{
+    int i, n;
+    double result, guess1, guess2, stop = 0.000000001;
+
+    printf("Enter the highest order of polynomial equation: ");
+    scanf("%d", &n);
+
+    double a[n + 1];
+
+    printf("Please provide the value of the following co-efficients: \n");
+
+    for(i = n; i >= 0; --i)
+    {
+        printf("a%d = ", i);
+        scanf("%lf", &a[i]);
+    }
+
+    printEquation(n, a);
+
+    guess1 = -fabs(sqrt((pow(a[n-1] / a[n], 2.0)) - 2.0 * (a[n-2] / a[n])));
+    guess2 = fabs(sqrt((pow(a[n-1] / a[n], 2.0)) - 2.0 * (a[n-2] / a[n])));
+
+    result = rootFindingBracketingMethod(guess1, guess2, n, a, stop);
+
+    printf("Solution Root: %lf", result);
+
+    return 0;
+}
 
 void gotoPosition(int x, int y)
 {
@@ -20,123 +47,105 @@ void gotoPosition(int x, int y)
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
 }
 
-int main(void)
+void printEquation(int n, double a[])
 {
-    /// Arithmetic Operator
-    gotoPosition(18, 0);
-    printf("======================\n");
-    gotoPosition(18, 1);
-    printf("|Arithmetic Operation|\n");
-    gotoPosition(18, 2);
-    printf("======================\n");
-    printf("____________________________________________________________________\n");
-    printf("|Operand 1     Operator     Operand 2 = Result     Operation Name  |\n");
-    printf("====================================================================\n");
-    printf("|%4d             + %12d      = %3d          Addition      |\n", 5, 2, 5 + 2);
-    printf("|%4d             - %12d      = %3d          Subtraction   |\n", 5, 2, 5 - 2);
-    printf("|%4d             * %12d      = %3d          Multiplication|\n", 5, 2, 5 * 2);
-    printf("|%4d             / %12d      = %3d          Division      |\n", 5, 2, 5 / 2);
-    printf("|%4d             %% %12d      = %3d          Modulus       |\n", 5, 2, 5 % 2);
-    printf("====================================================================\n");
+    int i;
+
+    printf("The provided function is following:\n");
+    for(i = n; i > 0; --i)
+    {
+        if(a[i] >= 0)
+            printf("%lf", a[i]);
+        else
+            printf("- %lf", -a[i]);
+        if(i > 1)
+            printf("x^%d ", i);
+        else
+            printf("x ");
+    }
+    if(a[0] >= 0)
+        printf("+ %lf = 0\n\n", a[0]);
+    else
+        printf("- %lf = 0\n\n", -a[0]);
     printf("\n");
 
-    /// Assignment Operator
+    printf("The function using horner's equation:\n");
 
-    gotoPosition(8, 13);
-    printf("======================\n");
-    gotoPosition(8, 14);
-    printf("|Assignment Operation|\n");
-    gotoPosition(8, 15);
-    printf("======================\n");
+    for(i = 0; i < n - 1; ++i)
+        printf("(");
+    printf("%lfx", a[n]);
 
-    int val;
+    for(i = n - 1; i > 0; --i)
+    {
+        if(a[i] >= 0)
+            printf("+ %lf)x ", a[i]);
+        else
+            printf("- %lf)x ", -a[i]);
+    }
 
-    printf("_______________________________________\n");
-    val = 5;
-    printf("When I write val  = 5; val becomes: %2d\n", val);
-    val += 7;
-    printf("When I write val += 7; val becomes: %2d\n", val);
-    val -= 6;
-    printf("When I write val -= 6; val becomes: %2d\n", val);
-    val *= 3;
-    printf("When I write val *= 3; val becomes: %2d\n", val);
-    val /= 5;
-    printf("When I write val /= 5; val becomes: %2d\n", val);
-    val %= 2;
-    printf("When I write val %= 2; val becomes: %2d\n", val);
-    printf("=======================================\n");
-    printf("\n");
-
-    /// Increment/Decrement Operator
-    int i = 0;
-
-    gotoPosition(3, 25);
-    printf("===============================\n");
-    gotoPosition(3, 26);
-    printf("|Increment/Decrement Operation|\n");
-    gotoPosition(3, 27);
-    printf("===============================\n");
-    printf("_____________________________________________\n");
-    printf("The value of i started as: %d\n", i);
-    printf("The value when prefix increment is done : %d\n", ++i);
-    printf("The value after prefix increment is done: %d\n", i);
-    printf("The value when postfix increment is done: %d\n", i++);
-    printf("The value after postfix increment is done: %d\n", i);
-    printf("The value when postfix decrement is done: %d\n", i--);
-    printf("The value after postfix decrement is done: %d\n", i);
-    printf("The value when postfix decrement is done : %d\n", --i);
-    printf("The value after postfix decrement is done: %d\n", i);
-    printf("=============================================\n");
-    printf("\n");
-
-    /// Relational Operator
-    int operand1 = 5;
-    int operand2 = 8;
-
-    gotoPosition(0, 30);
-    printf("======================\n");
-    gotoPosition(0, 31);
-    printf("|Relational Operation|\n");
-    gotoPosition(0, 32);
-    printf("======================\n");
-    printf("_______________________________________________\n");
-    printf("|Operand 1     Operator     Operand 2 | Result|\n");
-    printf("==============================================|\n");
-    printf("|%4d             == %11d      | %3d   |\n", operand1, operand2, operand1 == operand2);
-    printf("|---------------------------------------------|\n");
-    printf("|%4d             >= %11d      | %3d   |\n", operand1, operand2, operand1 >= operand2);
-    printf("|---------------------------------------------|\n");
-    printf("|%4d             <= %11d      | %3d   |\n", operand1, operand2, operand1 <= operand2);
-    printf("|---------------------------------------------|\n");
-    printf("|%4d              > %11d      | %3d   |\n", operand1, operand2, operand1 > operand2);
-    printf("|---------------------------------------------|\n");
-    printf("|%4d              < %11d      | %3d   |\n", operand1, operand2, operand1 < operand2);
-    printf("|---------------------------------------------|\n");
-    printf("|%4d             != %11d      | %3d   |\n", operand1, operand2, operand1 != operand2);
-    printf("===============================================\n");
+    if(a[0] >= 0)
+        printf("+ %lf = 0\n\n", a[0]);
+    else
+        printf("- %lf = 0\n\n", -a[0]);
 
     printf("\n");
+}
 
-    /// Logical Operator
-    int n = 0, p = 1;
+double hornerEvaluation(int n, double x, double a[])
+{
+    double result = a[n];
+    int i;
 
-    gotoPosition(0, 35);
-    printf("===================\n");
-    gotoPosition(0, 36);
-    printf("|Logical Operation|\n");
-    gotoPosition(0, 37);
-    printf("===================\n");
-    printf("_____________________\n");
-    printf("|A|B|!A|!B|A&&B|A||B|\n");
-    printf("=====================\n");
-    printf("|%d|%d| %d| %d|   %d|   %d|\n", n, n, !n, !n, n&&n, n||n);
-    printf("|-------------------|\n");
-    printf("|%d|%d| %d| %d|   %d|   %d|\n", n, p, !n, !p, n&&p, n||p);
-    printf("|-------------------|\n");
-    printf("|%d|%d| %d| %d|   %d|   %d|\n", p, n, !p, !n, p&&n, p||n);
-    printf("|-------------------|\n");
-    printf("|%d|%d| %d| %d|   %d|   %d|\n", p, p, !p, !p, p&&p, p||p);
-    printf("=====================\n");
+    for(i = n - 1; i >= 0; --i)
+        result = result * x + a[i];
 
-    return 0;
+    return result;
+}
+
+double rootFindingBracketingMethod(double x1, double x2, int n, double a[], double stop)
+{
+    double x0, f0, f1, f2;
+
+    f1 = hornerEvaluation(n, x1, a);
+    f2 = hornerEvaluation(n, x2, a);
+
+
+    printf("=========================================================================================================\n");
+    printf("|   x2               x1              x0             f2                f1             f0             E   |\n");
+    printf("---------------------------------------------------------------------------------------------------------\n");
+
+    while(fabs((x2 - x1) / (x2 == 0 ? 1 : x2)) >= stop)
+    {
+        // Update rule for Bisection Method
+        // x0 = (x2 + x1) / 2.0;
+
+        // Update rule for False Position Method
+        x0 = x1 - f1 * ((x2 - x1) / (f2 - f1));
+
+        f0 = hornerEvaluation(n, x0, a);
+
+        printf("|%+3.4lf \t %+3.4lf \t %+3.4lf \t %+3.4lf \t %+3.4lf \t %+3.4lf \t %+3.4lf|\n", x2, x1, x0, f2, f1, f0, fabs((x2 - x1) / (x2 == 0 ? 1 : x2)));
+
+        if(f0 == 0)
+        {
+            x2 = x1 = x0;
+            break;
+        }
+
+        else if(f2 * f0 < 0)
+        {
+            x1 = x0;
+            f1 = f0;
+        }
+        else
+        {
+            x2 = x0;
+            f2 = f0;
+        }
+    }
+    printf("=========================================================================================================\n");
+
+    printf("Final Error: %lf\n", (fabs(x2 - x1) / x2));
+
+    return (x1 + x2) / 2.0;
 }
